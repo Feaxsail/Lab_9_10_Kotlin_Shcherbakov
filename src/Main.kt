@@ -1,8 +1,15 @@
-fun main(){
+fun main() {
     val manager = ResourceManager()
-    val gas = OutpostResource(id = 1, name = "Gas", amount = 100)
-    val mineral = OutpostResource(id = 2, name = "Mineral", amount = 250)
-    manager.add(gas)
-    manager.add(mineral)
+
+    manager.add(OutpostResource(id = 1, name = "Minerals", amount = 120))
+    manager.add(OutpostResource(id = 2, name = "Gas", amount = 40))
+
+    val generator = EnergyGenerator()
+    val lab = ResearchLab()
+
+    generator.performAction(manager)
+    lab.performAction(manager)
+
+    println()
     manager.printAll()
 }
