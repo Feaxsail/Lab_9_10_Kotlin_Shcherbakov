@@ -1,4 +1,4 @@
-// example/Delegation.kt
+
 
 import kotlin.properties.Delegates
 
@@ -101,6 +101,6 @@ fun main() {
     counter = 5
 
     val user = User()
-    user.name = "Алиса"
-    user.name = "Боб"
+    user.name = "Дота"
+    user.name = "Пудж"
 }
