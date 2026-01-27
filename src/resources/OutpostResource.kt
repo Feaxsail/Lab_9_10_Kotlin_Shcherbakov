@@ -1,11 +1,13 @@
-package resources
+
+
+import kotlin.properties.Delegates
 
 data class OutpostResource(
     val id: Int,
     val name: String,
-    var amount: Int
+    val amountInit: Int
 ) {
-    override fun toString(): String {
-        return "Ваш ресурс: $id | Имя: $name | Количество: $amount"
+    var amount: Int by Delegates.observable(amountInit) { _, old, new ->
+        println("Ресурс $name изменён: $old → $new")
     }
 }

@@ -1,43 +1,35 @@
-import payment.*
-import outpost.*
-import modules.ModuleResult
 
-fun handleModuleResult(result: ModuleResult) {
-    when (result) {
-        is ModuleResult.Success -> println("Успех: ${result.message}")
-        is ModuleResult.ResourceProduced ->
-            println("Произведено: ${result.amount} ед. ${result.resourceName}")
-        is ModuleResult.NotEnoughResources ->
-            println("Не хватает ${result.resourceName}: нужно ${result.required}, есть ${result.available}")
-        is ModuleResult.Error -> println("Ошибка: ${result.reason}")
+import kotlin.properties.Delegates
+
+class SystemLogger {
+    init {
+        println("Система логирования инициализирована")
+    }
+    fun log(message: String) {
+        println("LOG: $message")
     }
 }
 
+val logger by lazy { SystemLogger() }
+
 fun main() {
-    // --- Платежи (оставляем) ---
-    val processor = PaymentProcessor()
-    val payments = listOf(
-        Payment("1234567890123", 100.0, CardType.VISA),
-        Payment("123", -50.0, CardType.MASTERCARD),
-        Payment("1234567890123456", 200.0, CardType.MIR)
-    )
-    for (payment in payments) {
-        processor.show(processor.pay(payment))
+    // Загрузка состояния
+    val loadedResources = FileStorage.load()
+    val manager = ResourceManager()
+    loadedResources.forEach { manager.add(it) }
+
+    if (loadedResources.isEmpty()) {
+        manager.add(OutpostResource(id = 1, name = "Minerals", amountInit = 300))
+        manager.add(OutpostResource(id = 2, name = "Gas", amountInit = 100))
     }
-    println()
 
-    // --- Модули базы ---
-    val generator = EnergyGenerator()
-    val lab = ResearchLab()
+    // Использование логгера
+    logger.log("Приложение запущено")
 
-    val genResult = generator.performAction()
-    val labResult = lab.performAction()
+    // Изменение ресурса
+    val minerals = manager.getAll().find { it.name == "Minerals" }
+    minerals?.amount = 350
 
-    handleModuleResult(genResult)
-    handleModuleResult(labResult)
-
-    println()
-
-    // --- Enum и data class (можно оставить или убрать) ---
-    println("Типы карт: ${CardType.values().contentToString()}")
+    // Сохранение состояния
+    FileStorage.save(manager.getAll())
 }
